@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +21,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // this blocked copy from chat gpt for solving method not exists (REGEXP)
+        if (DB::getDriverName() === 'sqlite') {
+            DB::getPdo()->sqliteCreateFunction('regexp', function ($pattern, $value) {
+                // Ensure pattern is safe
+                return (int) preg_match("/$pattern/", $value);
+            });
+        }
     }
 }
